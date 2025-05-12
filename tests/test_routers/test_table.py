@@ -42,3 +42,16 @@ async def test_get_all_tables(async_session: AsyncSession, ac: AsyncClient, tabl
     tables.sort(key=lambda x: x.id)
     assert len(resp_models) == len(tables)
     assert map(lambda x, y: x.id == y.id, zip(resp_models, tables))
+
+
+async def test_delete_table(async_session: AsyncSession, ac: AsyncClient, tables: list[Table]):
+    table = tables[-1]
+
+    # вызываем ручку
+    resp = await ac.delete(url=f"{TABLE_URL_PREFIX}{table.id}")
+    assert resp.status_code == HTTP_200_OK
+
+    # Проверяем бд
+    stmt = select(Table)
+    res = (await async_session.execute(stmt)).scalars().all()
+    assert len(res) == len(tables) - 1

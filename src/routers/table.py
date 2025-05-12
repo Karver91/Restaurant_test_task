@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from pydantic import PositiveInt
 
 from src.dependencies import table_service
 from src.schemas.table import TableResponse, TableScheme
@@ -31,3 +32,15 @@ async def add_table(
         service: Annotated[TableService, Depends(table_service)]
 ):
     return await service.add_one(data=request_info)
+
+
+@router.delete(
+    path="/{table_id}",
+    response_model=TableResponse,
+    summary="Удалить столик"
+)
+async def delete_table(
+        table_id: PositiveInt,
+        service: Annotated[TableService, Depends(table_service)]
+):
+    return await service.delete_one(table_id)
