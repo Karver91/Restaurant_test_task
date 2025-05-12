@@ -30,7 +30,7 @@ async def async_engine():
 @pytest_asyncio.fixture(scope="function")
 async def async_session(async_engine):
     async_session_factory = async_sessionmaker(bind=async_engine, expire_on_commit=False)
-    async with async_session_factory as session:
+    async with async_session_factory() as session:
         yield session
         await session.rollback()
 
