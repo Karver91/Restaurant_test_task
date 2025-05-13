@@ -1,5 +1,5 @@
 from src.models import Table
-from src.utils.repository import SQLAlchemyRepository
+from src.repository.base import SQLAlchemyRepository
 
 
 class TableRepository(SQLAlchemyRepository):

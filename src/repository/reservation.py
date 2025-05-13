@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import select, func
 
 from src.models import Reservation
-from src.utils.repository import SQLAlchemyRepository
+from src.repository.base import SQLAlchemyRepository
 
 
 class ReservationRepository(SQLAlchemyRepository):
