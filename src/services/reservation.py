@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_404_NOT_FOUND
 
 from src.logginig.setting import loggers
 from src.repository.reservation import ReservationRepository
@@ -69,8 +69,23 @@ class ReservationService:
                 detail=err_msg
             )
 
-    async def delete_one(self):
-        pass
+    async def delete_one(self, _id):
+        try:
+            result = await self.repository.get_one(_id=_id)
+            if not result:
+                raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Бронь не найдена в базе")
+            await self.repository.delete_one(_id=_id)
+            return ReservationResponse(data=[result])
+        except HTTPException as http_exp:
+            logger.exception(http_exp.detail)
+            raise http_exp
+        except Exception as e:
+            err_msg = "Ошибка удаления брони"
+            logger.exception(err_msg)
+            raise HTTPException(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=err_msg
+            )
 
     @staticmethod
     async def __is_time_reserved(reservation_time, duration, db_reservations) -> bool:

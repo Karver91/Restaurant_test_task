@@ -87,3 +87,20 @@ async def test_get_reservations(
     reservations.sort(key=lambda x: x.id)
     assert len(resp_models) == len(reservations)
     assert map(lambda x, y: x.id == y.id, zip(resp_models, reservations))
+
+
+async def test_delete_reservation(
+        async_session: AsyncSession,
+        ac: AsyncClient,
+        reservations: list[Reservation]
+):
+    reservation = reservations[-1]
+
+    # вызываем ручку
+    resp = await ac.delete(url=f"{RESERVATION_URL_PREFIX}{reservation.id}")
+    assert resp.status_code == HTTP_200_OK
+
+    # Проверяем бд
+    stmt = select(Reservation)
+    res = (await async_session.execute(stmt)).scalars().all()
+    assert len(res) == len(reservations) - 1
