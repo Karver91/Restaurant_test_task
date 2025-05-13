@@ -8,6 +8,18 @@ from src.services.reservation import ReservationService
 
 router = APIRouter(prefix="/reservation", tags=["Бронирование"])
 
+
+@router.get(
+    path="/",
+    response_model=ReservationResponse,
+    summary="Получить список всех броней"
+)
+async def get_all_reservation(
+        service: Annotated[ReservationService, Depends(reservation_service)]
+):
+    return await service.get_all()
+
+
 @router.post(
     path="/",
     response_model=ReservationResponse,

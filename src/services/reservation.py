@@ -55,7 +55,19 @@ class ReservationService:
             )
 
     async def get_all(self):
-        pass
+        try:
+            result = await self.repository.get_all()
+            return ReservationResponse(data=result)
+        except HTTPException as http_exp:
+            logger.exception(http_exp.detail)
+            raise http_exp
+        except Exception as e:
+            err_msg = "Ошибка получения броней"
+            logger.exception(err_msg)
+            raise HTTPException(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=err_msg
+            )
 
     async def delete_one(self):
         pass
